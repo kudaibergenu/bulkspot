@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Release artifacts (publish via GitHub Releases instead)
+*.zip
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+
+# Node (if you ever add tooling)
+node_modules/
+
+# Local dev manifest variants — keep your client ID out of git
+extension/manifest.local.json
+extension/manifest.dev.json

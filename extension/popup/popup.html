@@ -1,0 +1,378 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>BulkSpot</title>
+<style>
+  :root {
+    --bg: #fafaf7;
+    --surface: #ffffff;
+    --border: #ececea;
+    --text: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --bulk: #c85a00;
+    --accent: #007aff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1e;
+      --surface: #2c2c2e;
+      --border: rgba(255,255,255,0.08);
+      --text: #f2f2f7;
+      --text-secondary: #a1a1a6;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    width: 320px;
+    margin: 0;
+    padding: 18px 18px 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue',
+      'Google Sans', Roboto, Arial, sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--bg);
+  }
+  h1 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+
+  /* Rows — toggle + selects */
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+  }
+  .row-label { font-size: 13px; }
+
+  /* Switch */
+  .switch {
+    position: relative;
+    width: 38px;
+    height: 22px;
+  }
+  .switch input { display: none; }
+  .slider {
+    position: absolute;
+    inset: 0;
+    background: #d1d1d6;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.18s ease;
+  }
+  .slider::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    transition: transform 0.18s ease;
+  }
+  input:checked + .slider { background: #34c759; }
+  input:checked + .slider::before { transform: translateX(16px); }
+
+  /* Stats card */
+  .stats {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+  }
+  .stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin: 3px 0;
+  }
+  .stat-label { color: var(--text-secondary); }
+  .stat-num {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--bulk);
+  }
+
+  /* Whitelist */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 18px 0 8px;
+  }
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+  .section-count {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+  .wl-list {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .wl-empty {
+    padding: 16px 14px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.5;
+  }
+  .wl-group-label {
+    padding: 8px 12px 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    background: transparent;
+  }
+  .wl-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    font-size: 12px;
+    border-top: 0.5px solid var(--border);
+    gap: 8px;
+  }
+  .wl-item:first-of-type { border-top: none; }
+  .wl-item-value {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-variant-numeric: tabular-nums;
+  }
+  .wl-item-kind {
+    font-size: 10px;
+    color: var(--text-secondary);
+    padding: 1px 6px;
+    background: rgba(0,122,255,0.1);
+    color: var(--accent);
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  /* Blocklist kind chip uses the bulk/orange accent */
+  .wl-item-kind.is-block {
+    background: rgba(200,90,0,0.12);
+    color: var(--bulk);
+  }
+
+  /* Add-entry row (inside list card) */
+  .wl-add {
+    display: flex;
+    gap: 6px;
+    padding: 8px 10px;
+    border-top: 0.5px solid var(--border);
+    background: transparent;
+  }
+  .wl-add input {
+    flex: 1;
+    min-width: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 0.5px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 7px;
+    padding: 6px 8px;
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+  }
+  .wl-add input:focus { border-color: var(--accent); }
+  .wl-add button {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    background: rgba(0,0,0,0.06);
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .wl-add button:hover { background: rgba(0,0,0,0.1); }
+  @media (prefers-color-scheme: dark) {
+    .wl-add button { background: rgba(255,255,255,0.1); }
+    .wl-add button:hover { background: rgba(255,255,255,0.14); }
+  }
+  .wl-item-remove {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    background: transparent;
+    padding: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.5;
+    transition: opacity 0.12s, background 0.12s;
+    flex-shrink: 0;
+  }
+  .wl-item-remove:hover {
+    opacity: 1;
+    background: rgba(255, 59, 48, 0.12);
+    color: #ff3b30;
+  }
+
+  /* Buttons */
+  .buttons { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+  button.primary, button.secondary {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    width: 100%;
+    padding: 9px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.12s, transform 0.08s;
+  }
+  button.primary { background: #1d1d1f; color: #fff; }
+  button.primary:hover { background: #000; }
+  button.primary:active { transform: scale(0.99); }
+  button.secondary {
+    background: rgba(0,0,0,0.04);
+    color: var(--text);
+  }
+  button.secondary:hover { background: rgba(0,0,0,0.07); }
+  @media (prefers-color-scheme: dark) {
+    button.primary { background: #f2f2f7; color: #1d1d1f; }
+    button.primary:hover { background: #fff; }
+    button.secondary { background: rgba(255,255,255,0.1); color: var(--text); }
+    button.secondary:hover { background: rgba(255,255,255,0.14); }
+  }
+
+  .status {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 10px;
+    text-align: center;
+    min-height: 14px;
+  }
+
+  /* Title row + connection pill */
+  .title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 14px;
+  }
+  .title-row h1 { margin: 0; }
+  .conn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.04);
+  }
+  .conn-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #d1d1d6;
+  }
+  .conn.is-connected { color: #248a3d; background: rgba(52,199,89,0.12); }
+  .conn.is-connected .conn-dot { background: #34c759; }
+  @media (prefers-color-scheme: dark) {
+    .conn { background: rgba(255,255,255,0.08); }
+    .conn.is-connected { color: #6ee089; background: rgba(52,199,89,0.18); }
+  }
+  button.danger {
+    background: rgba(255, 59, 48, 0.1);
+    color: #ff3b30;
+  }
+  button.danger:hover { background: rgba(255, 59, 48, 0.16); }
+</style>
+</head>
+<body>
+
+<div class="title-row">
+  <h1>BulkSpot</h1>
+  <span class="conn" id="conn"><span class="conn-dot"></span><span id="conn-label">Not connected</span></span>
+</div>
+
+<div class="row">
+  <span class="row-label">Enabled</span>
+  <label class="switch">
+    <input type="checkbox" id="enabled" />
+    <span class="slider"></span>
+  </label>
+</div>
+
+
+<div class="section-header">
+  <span class="section-title">Whitelist</span>
+  <span class="section-count" id="wl-count">—</span>
+</div>
+<div class="wl-list" id="wl-list">
+  <div class="wl-empty" id="wl-empty">
+    Click any dot in Gmail to whitelist a sender or domain.
+  </div>
+  <div class="wl-add">
+    <input type="text" id="wl-input" placeholder="email@example.com or @domain.com" autocomplete="off" spellcheck="false" />
+    <button id="wl-add-btn" type="button">Add</button>
+  </div>
+</div>
+
+<div class="section-header">
+  <span class="section-title">Blocklist</span>
+  <span class="section-count" id="bl-count">—</span>
+</div>
+<div class="wl-list" id="bl-list">
+  <div class="wl-empty" id="bl-empty">
+    Always mark matching senders or domains as bulk.
+  </div>
+  <div class="wl-add">
+    <input type="text" id="bl-input" placeholder="email@example.com or @domain.com" autocomplete="off" spellcheck="false" />
+    <button id="bl-add-btn" type="button">Add</button>
+  </div>
+</div>
+
+<div class="buttons">
+  <button class="primary" id="connect">Connect Gmail</button>
+  <button class="danger" id="disconnect" hidden>Disconnect Gmail</button>
+  <button class="secondary" id="clear">Clear cache</button>
+</div>
+
+<div class="status" id="status"></div>
+
+<script src="popup.js"></script>
+</body>
+</html>

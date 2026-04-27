@@ -1,0 +1,42 @@
+name: Feature request
+description: Suggest a new feature or enhancement.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing, please skim CONTRIBUTING.md → "What's deliberately out of scope". Some categories of feature (Gmail writes, telemetry, body-content heuristics, cross-device sync) are intentionally not on the roadmap.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the inbox situation where you'd want this. Concrete examples beat abstract wishes.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How should this work in the UI? What changes in the classifier or the popup?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any workarounds you've tried, or other ways this could be solved.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Alignment check
+      options:
+        - label: This does not require a new OAuth scope beyond `gmail.metadata`
+          required: true
+        - label: This does not require writing to Gmail (labels, archive, read state, etc.)
+          required: true
+        - label: This does not require a backend or telemetry
+          required: true

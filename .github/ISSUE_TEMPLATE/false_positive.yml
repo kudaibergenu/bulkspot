@@ -1,0 +1,63 @@
+name: Classifier mistake (false positive / false negative)
+description: An email got the wrong chip color. The most useful kind of report.
+labels: [classifier]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting — these are the highest-leverage contributions to BulkSpot. Real headers from real misclassifications are exactly what tunes the rules.
+
+        **Do not paste headers that contain private information.** Redact recipient addresses, account numbers, message IDs, or anything else you wouldn't want on a public GitHub issue. The classifier reads `From`, `List-Unsubscribe`, `Feedback-ID`, `Precedence`, `DKIM-Signature` (`d=` only), `Return-Path`, `Received`, and a few `X-*` vendor headers — everything else can be redacted.
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Mistake type
+      options:
+        - False positive — was marked bulk, should have been clean
+        - False negative — was marked clean, should have been bulk
+    validations:
+      required: true
+
+  - type: input
+    id: from-domain
+    attributes:
+      label: Sender domain (redact local part if you want)
+      placeholder: "e.g. @notion.so or alice@example.com"
+    validations:
+      required: true
+
+  - type: textarea
+    id: chip-reasons
+    attributes:
+      label: What reasons did the chip popover show?
+      description: Click the chip in Gmail → the popover lists the reasons the classifier reported. Copy them here.
+      placeholder: |
+        - List-Unsubscribe present (+3)
+        - DKIM signed by sendgrid.net (+2)
+    validations:
+      required: true
+
+  - type: textarea
+    id: headers
+    attributes:
+      label: Relevant headers (redacted)
+      description: |
+        In Gmail: open the message → ⋮ menu → **Show original** → copy the headers section. Redact anything personal before pasting.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: why-wrong
+    attributes:
+      label: Why is this misclassified?
+      description: One or two sentences on what makes this a clear bulk-vs-clean case to a human reader.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Privacy check
+      options:
+        - label: I have redacted recipient addresses, message IDs, and any other personal information from the headers above.
+          required: true

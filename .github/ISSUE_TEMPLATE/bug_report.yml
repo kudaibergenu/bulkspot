@@ -1,0 +1,79 @@
+name: Bug report
+description: Something is broken or not behaving as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Before filing, please check that this isn't a classifier accuracy issue — those go in the **False positive / negative** template, not here.
+
+  - type: input
+    id: chrome-version
+    attributes:
+      label: Chrome version
+      placeholder: "e.g. 124.0.6367.119"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "e.g. macOS 14.5, Windows 11, Ubuntu 22.04"
+    validations:
+      required: true
+
+  - type: input
+    id: bulkspot-version
+    attributes:
+      label: BulkSpot version
+      description: Visible in chrome://extensions
+      placeholder: "e.g. 1.1.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1. Open Gmail
+        2. ...
+        3. See the broken behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Service worker / content script console output
+      description: |
+        Open `chrome://extensions` → BulkSpot → "Inspect views: service worker" for background errors.
+        Open Gmail → DevTools → Console for content-script errors.
+        Paste anything that looks relevant.
+      render: shell
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I'm running the latest `main` (or noted my version above)
+          required: true
+        - label: I removed any private information (emails, names) from logs/screenshots before pasting
+          required: true
